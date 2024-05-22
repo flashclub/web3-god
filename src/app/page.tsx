@@ -29,7 +29,7 @@ export default function Home() {
     setLoading(false);
   };
   return (
-    <main className="flex min-h-screen flex-col items-center  p-24">
+    <main className="flex min-h-screen flex-col items-center  p-4 lg:p-8">
       {/* <Input></Input> */}
       {/* <Button onClick={searchData}>搜索</Button> */}
       <Search

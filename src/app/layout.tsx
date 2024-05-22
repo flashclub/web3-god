@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-
+import { ConfigProvider } from "antd";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -16,7 +16,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <ConfigProvider
+          theme={{
+            token: {
+              // Seed Token，影响范围大
+              colorPrimary: "#0c0",
+              borderRadius: 2,
+              // 派生变量，影响范围小
+              colorBgContainer: "#f6ffed",
+            },
+          }}
+        >
+          {children}
+        </ConfigProvider>
+      </body>
     </html>
   );
 }
