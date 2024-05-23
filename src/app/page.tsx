@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Input, Row, Col } from "antd";
-const axios = require("axios");
+import { Input, Spin } from "antd";
+
+import { LoadingOutlined } from "@ant-design/icons";
 
 import { MemoizedReactMarkdown } from "@/components/Markdown/MemoizedReactMarkdown";
 
@@ -48,6 +49,8 @@ export default function Home() {
     setLoading(false);
   };
   const getTextSteam = async (tx: any, type: string) => {
+    setLoading(true);
+
     const response = await fetch("/api/ai", {
       method: "POST",
       headers: {
@@ -58,6 +61,7 @@ export default function Home() {
     const data = response.body;
     // Ensure data is not null before proceeding
     if (!data) {
+      setLoading(false);
       throw new Error("Response body is null");
     }
     const reader = data.getReader();
@@ -72,6 +76,8 @@ export default function Home() {
       text += chunkValue;
       setText((prev) => text);
     }
+    setLoading(false);
+
     return text;
   };
   return (
@@ -90,6 +96,7 @@ export default function Home() {
         size="large"
         loading={loading}
       />
+
       {tx && (
         <div className="mt-2 w-full">
           {showH3 && (
@@ -99,9 +106,15 @@ export default function Home() {
           )}
           <div className="flex flex-col lg:flex-row">
             <div className="flex-1">
-              <MemoizedReactMarkdown className="break-words px-2">
-                {text}
-              </MemoizedReactMarkdown>
+              {loading ? (
+                <Spin
+                  indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+                />
+              ) : (
+                <MemoizedReactMarkdown className="break-words px-2">
+                  {text}
+                </MemoizedReactMarkdown>
+              )}
             </div>
             <div className="break-all flex-1">
               <TextArea rows={35} value={tx}></TextArea>
@@ -118,9 +131,15 @@ export default function Home() {
           )}
           <div className="flex flex-col lg:flex-row">
             <div className="flex-1">
-              <MemoizedReactMarkdown className="break-words px-2">
-                {text}
-              </MemoizedReactMarkdown>
+              {loading ? (
+                <Spin
+                  indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+                />
+              ) : (
+                <MemoizedReactMarkdown className="break-words px-2">
+                  {text}
+                </MemoizedReactMarkdown>
+              )}
             </div>
             {abi && (
               <div className="break-all flex-1">
