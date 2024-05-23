@@ -12,6 +12,7 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [tx, setTx] = useState(null);
   const [abi, setAbi] = useState(null);
+  const [addressInfo, setAddressInfo] = useState(null);
   const [text, setText] = useState("");
   const [showInfo, setShowInfo] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -35,6 +36,7 @@ export default function Home() {
     } else {
       // 是地址
       setAbi(null);
+      setAddressInfo(null);
       setTx(null);
       setShowInfo(true);
       setContract(isContract);
@@ -43,6 +45,14 @@ export default function Home() {
       if (isContract) {
         setAbi(abi);
         getTextSteam(JSON.stringify(abi, null, 2), "contract");
+      } else {
+        const { data } = await fetch(`/api/addressHistory?address=${input}`, {
+          method: "GET",
+        }).then((response) => response.json());
+        // setText(JSON.stringify(data, null, 2));
+        getTextSteam(JSON.stringify(data, null, 2), "address");
+        setAddressInfo(data);
+        console.log("--data--");
       }
     }
     setShowH3(true);
@@ -146,6 +156,14 @@ export default function Home() {
                 <TextArea
                   rows={35}
                   value={JSON.stringify(abi, null, 2)}
+                ></TextArea>
+              </div>
+            )}
+            {addressInfo && (
+              <div className="break-all flex-1">
+                <TextArea
+                  rows={35}
+                  value={JSON.stringify(addressInfo, null, 2)}
                 ></TextArea>
               </div>
             )}
