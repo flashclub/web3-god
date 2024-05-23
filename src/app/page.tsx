@@ -84,7 +84,7 @@ export default function Home() {
         <div className="mt-2 w-full">
           <h3 className="text-lg mb-2 break-words">{input} is a hash</h3>
           <div className="flex flex-col lg:flex-row">
-            <div className="flex-1">
+            <div className="break-all flex-1">
               <MemoizedReactMarkdown className="break-words">
                 {text}
               </MemoizedReactMarkdown>
