@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Input, Row, Col } from "antd";
+const axios = require("axios");
 
 import { MemoizedReactMarkdown } from "@/components/Markdown/MemoizedReactMarkdown";
 
@@ -9,40 +10,50 @@ export default function Home() {
   const { TextArea } = Input;
   const [input, setInput] = useState("");
   const [tx, setTx] = useState(null);
+  const [abi, setAbi] = useState(null);
   const [text, setText] = useState("");
   const [showInfo, setShowInfo] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showH3, setShowH3] = useState(false);
   const [contract, setContract] = useState(false);
   const searchData = async () => {
     setLoading(true);
     setTx(null);
     setShowInfo(false);
+    setShowH3(false);
     setText("");
-    console.log("input: ", input);
     const { data } = await fetch(`/api/detect?input=${input}`, {
       method: "GET",
     }).then((response) => response.json());
-    console.log("res--", data);
-    const { isContract, tx = null } = data;
-    console.log("tx: ", tx);
+    const { isContract, tx = null, abi } = data;
+    // 是 hash
     if (tx) {
       setTx(tx);
       setShowInfo(false);
-      getTextSteam(tx);
+      getTextSteam(tx, "hash");
     } else {
+      // 是地址
+      setAbi(null);
       setTx(null);
       setShowInfo(true);
       setContract(isContract);
+      console.log("abi: ", abi);
+
+      if (isContract) {
+        setAbi(abi);
+        getTextSteam(JSON.stringify(abi, null, 2), "contract");
+      }
     }
+    setShowH3(true);
     setLoading(false);
   };
-  const getTextSteam = async (tx: any) => {
+  const getTextSteam = async (tx: any, type: string) => {
     const response = await fetch("/api/ai", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ messages: tx }),
+      body: JSON.stringify({ messages: tx, type }),
     });
     const data = response.body;
     // Ensure data is not null before proceeding
@@ -57,10 +68,8 @@ export default function Home() {
     while (!done) {
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
-      console.log("done status-", done);
       const chunkValue = decoder.decode(value);
       text += chunkValue;
-      console.log("text: ", text);
       setText((prev) => text);
     }
     return text;
@@ -75,6 +84,7 @@ export default function Home() {
         value={input}
         onChange={(e) => {
           setInput(e.target.value);
+          setShowH3(false);
         }}
         onSearch={searchData}
         size="large"
@@ -82,10 +92,14 @@ export default function Home() {
       />
       {tx && (
         <div className="mt-2 w-full">
-          <h3 className="text-lg mb-2 break-words">{input} is a hash</h3>
+          {showH3 && (
+            <h3 className="text-lg mb-2 break-all text-center">
+              {input} is a hash
+            </h3>
+          )}
           <div className="flex flex-col lg:flex-row">
-            <div className="break-all flex-1">
-              <MemoizedReactMarkdown className="break-words">
+            <div className="flex-1">
+              <MemoizedReactMarkdown className="break-words px-2">
                 {text}
               </MemoizedReactMarkdown>
             </div>
@@ -96,10 +110,27 @@ export default function Home() {
         </div>
       )}
       {showInfo && (
-        <div className="mt-2">
-          <h3 className="text-lg mb-2">
-            {input} is {contract ? "contract" : "address"}
-          </h3>
+        <div className="mt-2 w-full">
+          {showH3 && (
+            <h3 className="text-lg mb-2 mb-2 break-all text-center">
+              {input} is {contract ? "contract" : "address"}
+            </h3>
+          )}
+          <div className="flex flex-col lg:flex-row">
+            <div className="flex-1">
+              <MemoizedReactMarkdown className="break-words px-2">
+                {text}
+              </MemoizedReactMarkdown>
+            </div>
+            {abi && (
+              <div className="break-all flex-1">
+                <TextArea
+                  rows={35}
+                  value={JSON.stringify(abi, null, 2)}
+                ></TextArea>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </main>

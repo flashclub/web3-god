@@ -11,7 +11,11 @@ export async function POST(req) {
     maxLength: 12000,
     tokenLimit: 4000,
   }
-  const { model = defaultModel, messages, key = '', prompt = `Follow the user's instructions carefully.Detailed analysis gives all analysis results. Respond using markdown.`, temperature = 0 } = reqjson
+  const { model = defaultModel, messages, key = '', temperature = 0, type } = reqjson
+  const defaultPrompt = `As a programmer proficient in blockchain development, you know very much about web3 domain expertise, now you are given a smart contract or hash content and you can analyze some professional content. 
+  I will give you smart contract content or hash content and you will analyze it professionally. You don't have to list all the fields to explain them, give your professional analysis. Now I'm giving you the ${type}, so start analyzing.
+  Respond using markdown.`
+  let prompt = defaultPrompt
   const defaultMessage = [{ role: "user", content: messages }]
   let messagesToSend = [];
 

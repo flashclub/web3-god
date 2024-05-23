@@ -1,5 +1,4 @@
 // app/api/hello/route.js
-const axios = require('axios');
 const { Web3 } = require('web3');
 const infuraUrl = 'https://eth.llamarpc.com';
 

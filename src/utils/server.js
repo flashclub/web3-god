@@ -30,8 +30,6 @@ export const OpenAIStream = async (
   // let url = `${OPENAI_API_HOST}/v1/chat/completions`;
   let url = `${OPENAI_API_HOST}/chat/completions`;
 
-  console.log('real req url', url);
-
   const res = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',

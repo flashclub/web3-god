@@ -1,3 +1,4 @@
+import { getContractABI } from '@/utils/tool'
 const { Web3 } = require('web3');
 const infuraUrl = 'https://eth.llamarpc.com';
 
@@ -39,14 +40,13 @@ export async function GET(request) {
   if (typeof res === 'string') {
     let tx_dict = {}
     if (res === 'invalid') {
-      tx_dict = {}
+      tx_dict = '{}'
     } else {
       let tx = await web3.eth.getTransaction(input);
       const input_data = tx.input;
       const fromAddress = tx.from.toLowerCase();
       const toAddress = tx.to ? tx.to.toLowerCase() : null;
       tx_dict = JSON.stringify(tx, replacer, 2)
-      console.log('tx: ', tx);
     }
     return new Response(JSON.stringify({ message: 'ok', data: { isContract: res, tx: tx_dict } }), {
       status: 200,
@@ -55,7 +55,15 @@ export async function GET(request) {
       },
     });
   } else {
-    console.log('res--', res);
+    if (res) {
+      const abi = await getContractABI(input)
+      return new Response(JSON.stringify({ message: 'ok', data: { isContract: res, abi } }), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    }
     return new Response(JSON.stringify({ message: 'ok', data: { isContract: res } }), {
       status: 200,
       headers: {
