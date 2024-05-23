@@ -9,12 +9,13 @@ export default function Home() {
   const { TextArea } = Input;
   const [input, setInput] = useState("");
   const [tx, setTx] = useState(null);
-  const [data, setData] = useState("");
+  const [text, setText] = useState("");
   const [showInfo, setShowInfo] = useState(false);
   const [loading, setLoading] = useState(false);
   const [contract, setContract] = useState(false);
   const searchData = async () => {
     setLoading(true);
+    setText("");
     console.log("input: ", input);
     const { data } = await fetch(`/api/detect?input=${input}`, {
       method: "GET",
@@ -58,7 +59,7 @@ export default function Home() {
       const chunkValue = decoder.decode(value);
       text += chunkValue;
       console.log("text: ", text);
-      setData((prev) => text);
+      setText((prev) => text);
     }
     return text;
   };
@@ -83,13 +84,13 @@ export default function Home() {
         <div className="mt-2 w-full">
           <h3 className="text-lg mb-2">{input} is a hash</h3>
           <div className="flex flex-col lg:flex-row">
+            <div className="flex-1">
+              <MemoizedReactMarkdown className="break-all">
+                {text}
+              </MemoizedReactMarkdown>
+            </div>
             <div className="break-all flex-1">
               <TextArea rows={30} value={tx}></TextArea>
-            </div>
-            <div className="flex-1 p-2">
-              <MemoizedReactMarkdown className="break-all">
-                {data}
-              </MemoizedReactMarkdown>
             </div>
           </div>
         </div>
