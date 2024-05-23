@@ -48,7 +48,7 @@ export async function GET(request) {
       tx_dict = JSON.stringify(tx, replacer, 2)
       console.log('tx: ', tx);
     }
-    return new Response(JSON.stringify({ message: 'Hello, Next.js App Router!', data: { isContract: res, tx: tx_dict } }), {
+    return new Response(JSON.stringify({ message: 'ok', data: { isContract: res, tx: tx_dict } }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export async function GET(request) {
     });
   } else {
     console.log('res--', res);
-    return new Response(JSON.stringify({ message: 'Hello, Next.js App Router!', data: { isContract: res } }), {
+    return new Response(JSON.stringify({ message: 'ok', data: { isContract: res } }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
